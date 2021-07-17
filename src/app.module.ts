@@ -20,11 +20,11 @@ import { NotificationDetailService } from './NotificationDetail/notification-det
   imports: [
     TypeOrmModule.forRoot({
       type: 'mssql',
-      host: 'localhost',
-      port: 1433,
-      username: 'AdminLukas',
-      password: 'admin24',
-      database: 'BimayPRK',
+      host: 'mssql-39089-0.cloudclusters.net',
+      port: 39089,
+      username: 'AdminLCA',
+      password: 'AdminBimay24',
+      database: 'BimayPrk',
       entities: ['dist/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
       synchronize: true,
