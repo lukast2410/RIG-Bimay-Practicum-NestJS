@@ -8,32 +8,49 @@ import { ExtraClassDetailService } from './ExtraClassDetail/extra-class-detail.s
 import { ExtraClassHeaderController } from './ExtraClassHeader/extra-class-header.controller';
 import { ExtraClassHeader } from './ExtraClassHeader/extra-class-header.entity';
 import { ExtraClassHeaderService } from './ExtraClassHeader/extra-class-header.service';
+import { NotificationGateway } from './notification.gateway';
+import { NotificationController } from './Notification/notification.controller';
+import { Notification } from './Notification/notification.entity';
+import { NotificationService } from './Notification/notification.service';
+import { NotificationDetailController } from './NotificationDetail/notification-detail.controller';
+import { NotificationDetail } from './NotificationDetail/notification-detail.entity';
+import { NotificationDetailService } from './NotificationDetail/notification-detail.service';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: "mssql",
-      host: "localhost",
+      type: 'mssql',
+      host: 'localhost',
       port: 1433,
-      username: "AdminLukas",
-      password: "admin24",
-      database: "BimayPRK",
-      entities: ["dist/**/*.entity{.ts,.js}"],
+      username: 'AdminLukas',
+      password: 'admin24',
+      database: 'BimayPRK',
+      entities: ['dist/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
       synchronize: true,
-      keepConnectionAlive: true
+      keepConnectionAlive: true,
     }),
-    TypeOrmModule.forFeature([ExtraClassHeader, ExtraClassDetail])
+    TypeOrmModule.forFeature([
+      ExtraClassHeader,
+      ExtraClassDetail,
+      Notification,
+      NotificationDetail,
+    ]),
   ],
   controllers: [
     AppController,
     ExtraClassDetailController,
     ExtraClassHeaderController,
+    NotificationController,
+    NotificationDetailController,
   ],
   providers: [
     AppService,
     ExtraClassHeaderService,
     ExtraClassDetailService,
+    NotificationGateway,
+    NotificationService,
+    NotificationDetailService,
   ],
 })
 export class AppModule {}

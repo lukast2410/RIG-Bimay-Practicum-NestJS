@@ -1,4 +1,3 @@
-import { type } from "node:os";
 import { ExtraClassHeader } from "src/ExtraClassHeader/extra-class-header.entity";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn } from "typeorm";
 
@@ -12,6 +11,12 @@ export class ExtraClassDetail {
 
     @Column('text')
     StudentName: string
+
+    @Column('bit')
+    InsideStudent: boolean
+
+    @Column('varchar', {length: 50})
+    Status: string
 
     @ManyToOne(type => ExtraClassHeader, header => header.details, 
         { onDelete: 'CASCADE' })

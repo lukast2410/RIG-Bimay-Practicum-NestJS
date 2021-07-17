@@ -1,4 +1,3 @@
-import { type } from "node:os";
 import { ExtraClassDetail } from "src/ExtraClassDetail/extra-class-detail.entity";
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 
@@ -8,7 +7,16 @@ export class ExtraClassHeader {
     ExtraClassId: string
 
     @Column()
+    SemesterId: string
+
+    @Column()
     Course: string
+
+    @Column({ length: 50 })
+    Class: string
+
+    @Column()
+    TotalStudent: number
 
     @Column({
         length: 20

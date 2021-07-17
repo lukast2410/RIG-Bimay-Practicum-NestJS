@@ -15,6 +15,10 @@ export class ExtraClassDetailService {
         return this.detailRepository.findOne({ExtraClassId: classId, StudentId: studentId})
     }
 
+    updateDetailStatus(id: string, studentId: string, status: string){
+        return this.detailRepository.update({ExtraClassId: id, StudentId: studentId}, {Status: status})
+    }
+
     insertDetail(data: ExtraClassDetail){
         return this.detailRepository.save(data)
     }

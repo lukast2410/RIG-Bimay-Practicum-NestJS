@@ -11,16 +11,16 @@ export class ExtraClassHeaderService {
         return this.headerRepository.find()
     }
 
-    findAstExtraClassToday(date: Date, ast: String){
-        return this.headerRepository.find({
-            where: [
-                {ExtraClassDate: date, Assistant1: ast},
-                {ExtraClassDate: date, Assistant2: ast},
-            ],
-            order: {
-                Course: 'ASC'
-            },
-        })
+    findAstExtraClassToday(date: Date, ast: String, shift: number){
+        return this.headerRepository.createQueryBuilder()
+            .where("ExtraClassDate = :date", {date: date})
+            .andWhere(new Brackets(b => {
+                b.where("Assistant1 = :ast1", {ast1: ast})
+                    .orWhere("Assistant2 = :ast2", {ast2: ast})
+            }))
+            .orderBy(`(CASE WHEN Shift=${shift} THEN 1 ELSE 2 END)`, 'ASC')
+            .addOrderBy('Course', 'ASC')
+            .getMany()
     }
 
     findNotRecordedAstExtraClass(date: Date, ast: String, shift: number){
@@ -37,84 +37,101 @@ export class ExtraClassHeaderService {
                     .orWhere("Assistant2 = :ast2", { ast2: ast })
             }))
             .andWhere("LinkRecord = :record", { record: '' })
-            .orderBy("Course", "ASC")
+            .orderBy("ExtraClassDate", "DESC")
+            .addOrderBy("Course", "ASC")
             .getMany()
     }
 
-    findAllExtraClassToday(date: Date){
-        return this.headerRepository.find({
-            where: {
-                ExtraClassDate: date
-            },
-            order: {
-                Course: 'ASC'
-            }
-        })
+    findAllExtraClassToday(date: Date, shift: number, semesterId: string){
+        return this.headerRepository.createQueryBuilder()
+            .where("ExtraClassDate = :date", {date: date})
+            .andWhere("SemesterId = :semesterId", {semesterId: semesterId})
+            .orderBy(`(CASE WHEN Shift=${shift} THEN 1 ELSE 2 END)`, 'ASC')
+            .addOrderBy('Course', 'ASC')
+            .getMany()
     }
 
-    findAllExtraClassUpcoming(date: Date){
-        return this.headerRepository.find({
-            where: {
-                ExtraClassDate: MoreThan(date)
-            },
-            order: {
-                Course: 'ASC'
-            }
-        })
-    }
-
-    findAllExtraClassPrevious(date: Date){
-        return this.headerRepository.find({
-            where: {
-                ExtraClassDate: LessThan(date)
-            },
-            order: {
-                Course: 'ASC'
-            }
-        })
-    }
-
-    findSubjectExtraClassToday(course: string[], date){
-        return this.headerRepository.find({
-            where: {
-                ExtraClassDate: date,
-                Course: In(course)
-            },
-            order: {
-                Course: 'ASC'
-            }
-        })
-    }
-
-    findSubjectExtraClassUpcoming(course: string[], date){
+    findAllExtraClassUpcoming(date: Date, semesterId: string){
         return this.headerRepository.find({
             where: {
                 ExtraClassDate: MoreThan(date),
-                Course: In(course)
+                SemesterId: semesterId
             },
             order: {
+                ExtraClassDate: 'ASC',
                 Course: 'ASC'
             }
         })
     }
 
-    findSubjectExtraClassPrevious(course: string[], date){
+    findAllExtraClassPrevious(date: Date, semesterId: string){
         return this.headerRepository.find({
             where: {
                 ExtraClassDate: LessThan(date),
+                SemesterId: semesterId
+            },
+            order: {
+                ExtraClassDate: 'DESC',
+                Course: 'ASC'
+            }
+        })
+    }
+
+    findSubjectExtraClassToday(course: string[], date: Date, shift: number, semesterId: string){
+        return this.headerRepository.createQueryBuilder()
+            .where("ExtraClassDate = :date", {date: date})
+            .andWhere("SemesterId = :semesterId", {semesterId: semesterId})
+            .andWhere("Course IN (:...course)", { course: course })
+            .orderBy(`(CASE WHEN Shift=${shift} THEN 1 ELSE 2 END)`, 'ASC')
+            .addOrderBy('Course', 'ASC')
+            .getMany()
+    }
+
+    findSubjectExtraClassUpcoming(course: string[], date: Date, semesterId: string){
+        return this.headerRepository.find({
+            where: {
+                ExtraClassDate: MoreThan(date),
+                SemesterId: semesterId,
                 Course: In(course)
             },
             order: {
+                ExtraClassDate: 'ASC',
+                Course: 'ASC'
+            }
+        })
+    }
+
+    findSubjectExtraClassPrevious(course: string[], date: Date, semesterId: string){
+        return this.headerRepository.find({
+            where: {
+                ExtraClassDate: LessThan(date),
+                SemesterId: semesterId,
+                Course: In(course)
+            },
+            order: {
+                ExtraClassDate: 'DESC',
                 Course: 'ASC'
             }
         })
     }
 
     findExtraClass(id: string){
-        return this.headerRepository.findOne({
-            where: {ExtraClassId: id},
-            relations: ['details']
-        })
+        return this.headerRepository.createQueryBuilder('header')
+            .where("header.ExtraClassId = :id", {id: id})
+            .leftJoinAndSelect('header.details', 'ExtraClassDetail')
+            .orderBy('Status', 'DESC')
+            .addOrderBy('InsideStudent', 'DESC')
+            .getOne()
+    }
+
+    findExtraClassInSemester(id: string, semesterId: string){
+        return this.headerRepository.createQueryBuilder('header')
+            .where("header.ExtraClassId = :id", {id: id})
+            .andWhere("SemesterId = :semesterId", {semesterId: semesterId})
+            .leftJoinAndSelect('header.details', 'ExtraClassDetail')
+            .orderBy('Status', 'DESC')
+            .addOrderBy('InsideStudent', 'DESC')
+            .getOne()
     }
 
     insertExtraClass(extraClass: ExtraClassHeader){
