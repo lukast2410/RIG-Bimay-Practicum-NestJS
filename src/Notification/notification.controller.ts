@@ -54,8 +54,8 @@ export class NotificationController {
   @Post()
   async insertNotification(@Request() req, @Body() notif: Notification) {
     const auth = await checkCollabToken(req.headers.authorization);
-    notif.LastUpdate = new Date()
     if (auth != null) {
+      notif.LastUpdate = new Date()
       return {
         data: await this.notificationService.insertNotification(notif),
       };

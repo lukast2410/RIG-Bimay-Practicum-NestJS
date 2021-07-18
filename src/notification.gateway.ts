@@ -8,7 +8,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Notification } from './classes/Notification';
+import { Notification } from './classes/notification';
+import * as webpush from 'web-push'
 
 @WebSocketGateway()
 export class NotificationGateway
@@ -46,6 +47,11 @@ export class NotificationGateway
     const id = payload.id;
     console.log('connect');
     console.log(payload);
+    const temp = Object.keys(this.users).find(
+      (key) => this.users[key].id == client.id,
+    );
+    console.log("Found: " + temp)
+    if (temp && temp != id) delete this.users[temp];
     this.users[id] = client;
     for (const prop in this.users) {
       console.log(`${prop}: ${this.users[prop].id}`);
@@ -55,7 +61,6 @@ export class NotificationGateway
   @SubscribeMessage('userSignout')
   handleUserSignout(client: Socket, payload: any): void {
     const id = payload.id;
-    console.log('signout: ' + id);
     delete this.users[id];
     this.logger.log(`Client signout: ${client.id}`);
   }
@@ -70,7 +75,7 @@ export class NotificationGateway
 
   handleDisconnect(client: Socket) {
     const prop = Object.keys(this.users).find(
-      (key) => this.users[key] === client,
+      (key) => this.users[key] == client,
     );
     delete this.users[prop];
     this.logger.log(`Client disconnected: ${client.id}`);

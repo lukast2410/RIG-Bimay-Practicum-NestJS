@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Notification } from 'src/Notification/notification.entity';
 import { Repository } from 'typeorm';
 import { NotificationDetail } from './notification-detail.entity';
 

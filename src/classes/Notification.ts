@@ -1,4 +1,4 @@
-import { NotificationDetail } from "./NotificationDetail";
+import { NotificationDetail } from "./notification-detail";
 
 export interface Notification {
 	NotificationId: string

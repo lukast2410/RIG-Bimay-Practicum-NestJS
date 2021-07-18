@@ -42,6 +42,20 @@ export class ExtraClassHeaderService {
             .getMany()
     }
 
+    findRecentStudentExtraClass(date: Date, course: string[], classes: string[], semesterId: string){
+        return this.headerRepository.find({
+            where: {
+                ExtraClassDate: MoreThanOrEqual(date),
+                SemesterId: semesterId, 
+                Course: In(course),
+                Class: In(classes)
+            },
+            order: {
+                ExtraClassDate: 'ASC'
+            }
+        })
+    }
+
     findAllExtraClassToday(date: Date, shift: number, semesterId: string){
         return this.headerRepository.createQueryBuilder()
             .where("ExtraClassDate = :date", {date: date})

@@ -11,12 +11,13 @@ import { ExtraClassHeaderService } from "./extra-class-header.service";
 import { v4 as uuid } from 'uuid'
 import { formatDate, listShift } from "src/api/helper";
 import { NotificationDetail } from "src/NotificationDetail/notification-detail.entity";
+import { PushService } from "src/WebPush/push.service";
 
 const getStudents = `https://laboratory.binus.ac.id/lapi/api/ClassTransaction/GetClassTransactionStudents?classTransactionId=`
 
 @Controller('ExtraClassHeader')
 export class ExtraClassHeaderController {
-    constructor(private readonly headerService: ExtraClassHeaderService, private readonly detailService: ExtraClassDetailService, private readonly notificationService: NotificationService, private readonly notifDetailService: NotificationDetailService){}
+    constructor(private readonly headerService: ExtraClassHeaderService, private readonly detailService: ExtraClassDetailService, private readonly notificationService: NotificationService, private readonly notifDetailService: NotificationDetailService, private readonly pushService: PushService){}
 
     @Get('InSemester/:SemesterId')
     async getAllExtraClass(@Request() req, @Param('SemesterId') semesterId: string){
@@ -47,6 +48,26 @@ export class ExtraClassHeaderController {
             return {
                 today: await this.headerService.findAstExtraClassToday(now, initial, shift),
                 no_record: await this.headerService.findNotRecordedAstExtraClass(now, initial, shift)
+            }
+        }else{
+            throw new UnauthorizedException({ message: 'Authorization has been denied for this request.' })
+        }
+    }
+
+    @Post('StudentRecent')
+    async findStudentExtraClass(@Request() req, @Body('SemesterId') semesterId, @Body('Courses') courses: any[]){
+        const auth = await checkStudentToken(req.headers.authorization)
+        if(auth != null){
+            const now = new Date()
+            now.setHours(0, 0, 0, 0)
+            const course = []
+            const classes = []
+            courses.forEach(x => {
+                course.push(x.Subject)
+                classes.push(x.Class)
+            })
+            return {
+                data: await this.headerService.findRecentStudentExtraClass(now, course, classes, semesterId)
             }
         }else{
             throw new UnauthorizedException({ message: 'Authorization has been denied for this request.' })
@@ -141,6 +162,7 @@ export class ExtraClassHeaderController {
                 details: notifDetailData
             }
             const notifResult = await this.notificationService.insertNotification(notifData)
+            const result = this.pushService.sendNotificationToUsers(notifResult)
             return {
                 Notification: notifResult
             }
@@ -167,6 +189,7 @@ export class ExtraClassHeaderController {
                     notif.LastUpdate = new Date()
                     let updated = await this.notificationService.updateNotification(notif.NotificationId, notif)
                     let detailUpdate = await this.notifDetailService.updateNotificationRead(notif.NotificationId, false)
+                    let result = this.pushService.sendNotificationToUsers(updated)
                     return {
                         data: await this.notificationService.findNotification(notif.NotificationId),
                         PushNotification: true
