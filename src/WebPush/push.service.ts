@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Notification } from 'src/classes/notification';
+import { NotificationData } from 'src/classes/notification-data';
 import * as webpush from 'web-push';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class PushService {
     );
   }
 
-  sendNotificationToUsers(data: Notification) {
+  sendNotificationToUsers(data: NotificationData) {
     data.details.forEach((x) => {
       if (this.subscriptions[x.StudentId]) {
         const notif = {

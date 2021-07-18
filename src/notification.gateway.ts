@@ -8,7 +8,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Notification } from './classes/notification';
+import { NotificationData } from './classes/notification-data';
 import * as webpush from 'web-push'
 
 @WebSocketGateway()
@@ -25,8 +25,8 @@ export class NotificationGateway
   }
 
   @SubscribeMessage('broadcastExtraClass')
-  handleExtraClass(client: Socket, payload: Notification): void {
-    let notif: Notification = { ...payload, details: [] };
+  handleExtraClass(client: Socket, payload: NotificationData): void {
+    let notif: NotificationData = { ...payload, details: [] };
     payload.details.forEach((x) => {
       if (this.users[x.StudentId]) {
         notif.details = [
