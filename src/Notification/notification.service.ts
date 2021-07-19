@@ -17,17 +17,18 @@ export class NotificationService {
       .where('header.NotificationId = :id', { id: id })
       .leftJoinAndSelect('header.details', 'NotificationDetail')
       .orderBy('IsRead', 'ASC')
-      .getOne();
+      .getOne()
   }
 
-  findUserNotification(userId: string, semesterId: string) {
+  findUserNotification(userId: string, semesterId: string, contentId: string, type: string) {
     return this.notificationRepository
       .createQueryBuilder('header')
       .innerJoinAndSelect('header.details', 'detail')
       .where('StudentId = :id', { id: userId })
       .andWhere('SemesterId = :semesterId', { semesterId: semesterId })
-      .take(5)
-      .getMany();
+      .andWhere('ContentId = :contentId', { contentId: contentId })
+      .andWhere('Type = :type', { type: type })
+      .getOne()
   }
 
   findUserNotificationLimit(

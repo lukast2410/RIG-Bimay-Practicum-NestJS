@@ -20,7 +20,6 @@ export class NotificationGateway
 
   @SubscribeMessage('contentToServer')
   handleMessage(client: Socket, payload: any): void {
-    console.log(payload);
     this.server.emit('sendMessage', payload);
   }
 
@@ -45,17 +44,11 @@ export class NotificationGateway
   @SubscribeMessage('userConnected')
   handleUserConnected(client: Socket, payload: any): void {
     const id = payload.id;
-    console.log('connect');
-    console.log(payload);
     const temp = Object.keys(this.users).find(
       (key) => this.users[key].id == client.id,
     );
-    console.log("Found: " + temp)
     if (temp && temp != id) delete this.users[temp];
     this.users[id] = client;
-    for (const prop in this.users) {
-      console.log(`${prop}: ${this.users[prop].id}`);
-    }
   }
 
   @SubscribeMessage('userSignout')
