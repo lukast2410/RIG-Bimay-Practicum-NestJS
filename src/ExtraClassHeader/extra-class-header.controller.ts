@@ -180,7 +180,6 @@ export class ExtraClassHeaderController {
                 throw new NotFoundException({ message: 'ID not found! '})
             }
             const data = await this.headerService.updateExtraClass(id, extraClass)
-            console.log(data)
             if(extraClass.ExtraClassDate != temp.ExtraClassDate || extraClass.Shift != temp.Shift){
                 // ! update notif
                 let notif = await this.notificationService.findNotificationByContentId(temp.ExtraClassId)

@@ -19,8 +19,6 @@ export class PushService {
     const temp = Object.keys(this.subscriptions).find(
       (key) => this.subscriptions[key] == sub,
     );
-    console.log(key)
-    console.log(sub)
     if (temp && temp != key) delete this.subscriptions[temp];
     this.subscriptions[key] = sub;
     return 'Success'
