@@ -184,7 +184,7 @@ export class ExtraClassHeaderController {
                 // ! update notif
                 let notif = await this.notificationService.findNotificationByContentId(temp.ExtraClassId)
                 if(notif){
-                    notif.Content =  `${temp.Course} Extra Class schedule changed to ${formatDate(new Date(extraClass.ExtraClassDate))}, ${listShift[extraClass.Shift - 1].Name}`
+                    notif.Content =  `${temp.Course} New Extra Class will be held on ${formatDate(new Date(extraClass.ExtraClassDate))}, ${listShift[extraClass.Shift - 1].Name}`
                     notif.LastUpdate = new Date()
                     let updated = await this.notificationService.updateNotification(notif.NotificationId, notif)
                     let detailUpdate = await this.notifDetailService.updateNotificationRead(notif.NotificationId, false)
