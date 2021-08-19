@@ -138,10 +138,9 @@ export class ExtraClassHeaderService {
             .getOne()
     }
 
-    findExtraClassInSemester(id: string, semesterId: string){
+    findExtraClassInSemester(id: string){
         return this.headerRepository.createQueryBuilder('header')
             .where("header.ExtraClassId = :id", {id: id})
-            .andWhere("SemesterId = :semesterId", {semesterId: semesterId})
             .leftJoinAndSelect('header.details', 'ExtraClassDetail')
             .orderBy('Status', 'DESC')
             .addOrderBy('InsideStudent', 'DESC')

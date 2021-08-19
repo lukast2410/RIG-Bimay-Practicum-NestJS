@@ -93,11 +93,11 @@ export class ExtraClassHeaderController {
         }
     }
 
-    @Get(':SemesterId/:id')
-    async findExtraClass(@Request() req, @Param('SemesterId') semesterId: string, @Param('id') id: string){
+    @Get(':id')
+    async findExtraClass(@Request() req, @Param('id') id: string){
         const auth = await checkCollabToken(req.headers.authorization)
         if(auth != null){
-            let data = await this.headerService.findExtraClassInSemester(id, semesterId);
+            let data = await this.headerService.findExtraClassInSemester(id);
             if(data == null){
                 throw new NotFoundException({ message: 'ID not found! '})
             }
